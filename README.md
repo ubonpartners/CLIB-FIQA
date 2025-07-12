@@ -1,5 +1,18 @@
 # CLIB-FIQA: Face Image Quality Assessment with Confidence Calibration
 
+## MDB Fork notes 12 July 2025
+
+Playing with this network; I removed the CLIP branch and made various other changes to optimize for inference. Here is the morning journey.
+- exported to ONNX
+- CLIP branch is constant, with constant text input - recorded last such node in the CLIP branch (/Transpose_2)
+- got chatGPT to write script to dump that constant tensor (get_const_output.py)
+- got chatGPT to replace that node in the ONNX with a constant generating node, with those values (make_transpose_constant_node.py)
+- now the whole rest of the branch is dangling, unused, I got chatgpt to remove it (prune_unreachable.py)
+- it needed to remove some other stuff from the ONNX file (remove_unused_initializers.py)
+- got it to remove the unused output (logits_text, remove_ouput.py)
+- got it to add nodes to fold the input normalization into the ONNX (fold_norm.py)
+- the resulting ONNX is about 1/3rd the size and way faster, for fixed function like the inference example
+
 ## Description
 ####
 This is the code repository for the paper "CLIB-FIQA: Face Image Quality Assessment with Confidence Calibration," accepted in the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2024. The paper is available at [here](https://openaccess.thecvf.com/content/CVPR2024/papers/Ou_CLIB-FIQA_Face_Image_Quality_Assessment_with_Confidence_Calibration_CVPR_2024_paper.pdf).

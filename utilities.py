@@ -43,6 +43,7 @@ def load_net_param(net, weight_path):
     return net
 
 def dist_to_score(x):
+    x=x.cuda()
     anchor_bins = torch.tensor([0.1, 0.3, 0.5, 0.7, 0.9]).cuda()
     anchor_bins = anchor_bins.repeat(x.size(0), 1).cuda()
     norm_scores = x * anchor_bins
@@ -82,13 +83,13 @@ def cal_distance(x1, x2):
 
 def print_conf(conf):
     obj_list = []
-    for item in dir(conf): 
+    for item in dir(conf):
         if '__' not in item: obj_list.append(item)
     print('='*20 + "CONFIG" + '='*20)
     for i in obj_list:
         i_value = eval(f"conf.{i}")
         print(f"{i}: {i_value}")
-    
+
 def convert_models_to_fp32(model):
     for p in model.parameters():
         p.data = p.data.float()

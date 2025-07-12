@@ -56,13 +56,14 @@ def do_batch_onnx(session: ort.InferenceSession,
 
     # 3) Run session; names must match output_names in export
     ort_outs = session.run(
-        ["logits_per_image", "logits_per_text"],
+        ["logits_per_image"],
         inputs
     )
-    img_logits_np, _ = ort_outs
+    img_logits_np = ort_outs[0]
 
     # 4) Convert back to torch
     logits_per_image = torch.from_numpy(img_logits_np)
+    print(logits_per_image.shape)
 
     # 5) (Optional) replicate your original softmax behavior
     #    Depending on where you applied softmax in PyTorch, you can skip this
@@ -73,7 +74,7 @@ def do_batch_onnx(session: ort.InferenceSession,
 if __name__ == "__main__":
     print("Load");
     session = ort.InferenceSession(
-        "/mldata/fiqa/clib_fiqa_image_only2.onnx",
+        "/mldata/fiqa/clib_fiqa_image_only.onnx",
         providers=["CUDAExecutionProvider"]
     )
     print("Loaded ok")
